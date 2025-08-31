@@ -1,4 +1,7 @@
 /* service-worker.js */
+// Let OneSignal run inside our existing service worker
+importScripts('https://cdn.onesignal.com/sdks/OneSignalSDKWorker.js');
+
 const CACHE_NAME = 'pheasant-pwa-v1';
 const APP_SHELL = ['./','./index.html','./manifest.json','./assets/icon-192.png','./assets/icon-512.png','./assets/icon-32.png'];
 self.addEventListener('install', e => { e.waitUntil(caches.open(CACHE_NAME).then(c=>c.addAll(APP_SHELL))); self.skipWaiting(); });
