@@ -67,7 +67,7 @@
       appId: '5f9e9dc2-5680-402a-876a-ff04423c131a',
       notifyButton: { enable: false },
 
-      // 🔧 Tell OneSignal exactly where your workers live (project subfolder)
+      // IMPORTANT: make OneSignal use your repo-root worker files in the subfolder scope
       serviceWorkerPath: 'OneSignalSDKWorker.js',
       serviceWorkerUpdaterPath: 'OneSignalSDKUpdaterWorker.js',
       serviceWorkerParam: { scope: './' }
