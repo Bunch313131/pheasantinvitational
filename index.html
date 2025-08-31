@@ -79,62 +79,51 @@
     </div>
   </div>
 
-  <script>
-    // iOS hint + SW registration
-    const isIOS = /iphone|ipad|ipod/i.test(navigator.userAgent);
-    const isStandalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true;
-    if (isIOS && !isStandalone) { document.getElementById('iosTip').style.display = 'block'; }
-    if ('serviceWorker' in navigator) {
-      window.addEventListener('load', () => navigator.serviceWorker.register('service-worker.js'));
+ <script>
+  window.OneSignalDeferred = window.OneSignalDeferred || [];
+  OneSignalDeferred.push(async function(OneSignal) {
+    await OneSignal.init({
+      appId: '5f9e9dc2-5680-402a-876a-ff04423c131a',
+      safari_web_id: '',
+      notifyButton: { enable: false },
+      allowLocalhostAsSecureOrigin: true
+    });
+
+    async function diag() {
+      const supported = await OneSignal.Notifications.isPushSupported();
+      const perm = await OneSignal.Notifications.permission; // 'granted' | 'denied' | 'default'
+      const standalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true;
+      const subId = await OneSignal.User.PushSubscription.getSubscriptionId();
+      alert(
+        'Supported: ' + supported + '\n' +
+        'Permission: ' + perm + '\n' +
+        'Standalone(A2HS): ' + standalone + '\n' +
+        'Sub ID: ' + subId
+      );
     }
 
-    // OneSignal init + subscribe + diagnostics
-    window.OneSignalDeferred = window.OneSignalDeferred || [];
-    OneSignalDeferred.push(async function(OneSignal) {
-      await OneSignal.init({
-        appId: '5f9e9dc2-5680-402a-876a-ff04423c131a',  // your OneSignal App ID
-        safari_web_id: '',                               // optional
-        notifyButton: { enable: false },
-        allowLocalhostAsSecureOrigin: true
-      });
-
-      // Subscribe & tag
-      document.getElementById('btn-subscribe').addEventListener('click', async () => {
-        try {
-          await OneSignal.User.PushSubscription.optIn();
-          await OneSignal.User.addTag('players', 'true');
-          const subId = await OneSignal.User.PushSubscription.getSubscriptionId();
-          alert(subId
-            ? ('Subscribed! ID: ' + subId)
-            : 'Subscribed, but no ID yet — check OneSignal Web Platform "Site URL" is https://bunch313131.github.io');
-        } catch(e) {
-          alert('Subscription failed. On iPhone, "Add to Home Screen" first.');
-        }
-      });
-
-      // Temporary diagnostics button (you can remove later)
-      const diagBtn = document.createElement('button');
-      diagBtn.className = 'btn alt';
-      diagBtn.style.margin = '16px';
-      diagBtn.textContent = 'Diagnostics';
-      document.querySelector('.wrap').appendChild(diagBtn);
-
-      diagBtn.addEventListener('click', async () => {
-        try {
-          const perm = await OneSignal.Notifications.permission;  // 'granted' | 'denied' | 'default'
-          const subId = await OneSignal.User.PushSubscription.getSubscriptionId();
-          const tags = await OneSignal.User.getTags();
-          alert(
-            'Permission: ' + perm + '\n' +
-            'Subscription ID: ' + subId + '\n' +
-            'Tags: ' + JSON.stringify(tags)
-          );
-        } catch (e) {
-          alert('Diag error: ' + (e && e.message ? e.message : e));
-        }
-      });
+    document.getElementById('btn-subscribe').addEventListener('click', async () => {
+      try {
+        await OneSignal.User.PushSubscription.optIn();
+        await OneSignal.User.addTag('players', 'true');
+        const subId = await OneSignal.User.PushSubscription.getSubscriptionId();
+        alert(subId ? ('Subscribed! ID: ' + subId) : 'Subscribed, but no ID yet');
+      } catch (e) {
+        alert('Subscribe error: ' + (e && e.message ? e.message : e));
+        await diag();
+      }
     });
-  </script>
+
+    // Temporary diagnostics button
+    const diagBtn = document.createElement('button');
+    diagBtn.className = 'btn alt';
+    diagBtn.style.margin = '16px';
+    diagBtn.textContent = 'Diagnostics';
+    document.querySelector('.wrap').appendChild(diagBtn);
+    diagBtn.addEventListener('click', diag);
+  });
+</script>
+
   <script src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js" async></script>
 
   <script>
