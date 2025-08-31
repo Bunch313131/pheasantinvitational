@@ -59,7 +59,7 @@
     </div>
   </div>
 
- <script src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js"></script>
+<script src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js"></script>
 <script>
   window.OneSignalDeferred = window.OneSignalDeferred || [];
   window.OneSignalDeferred.push(async function (OneSignal) {
@@ -67,17 +67,13 @@
       appId: '5f9e9dc2-5680-402a-876a-ff04423c131a',
       notifyButton: { enable: false },
 
-      // IMPORTANT: make OneSignal use your repo-root worker files in the subfolder scope
-      serviceWorkerPath: 'OneSignalSDKWorker.js',
-      serviceWorkerUpdaterPath: 'OneSignalSDKUpdaterWorker.js',
-      serviceWorkerParam: { scope: './' }
+      // Force OneSignal to load workers from your project path (not domain root)
+      serviceWorkerPath: '/pheasantinvitational/OneSignalSDKWorker.js',
+      serviceWorkerUpdaterPath: '/pheasantinvitational/OneSignalSDKUpdaterWorker.js',
+      serviceWorkerParam: { scope: '/pheasantinvitational/' }
     });
 
-    // Buttons
-    const subBtn  = document.getElementById('btn-subscribe');
-    const diagBtn = document.getElementById('btn-diagnostics');
-
-    subBtn.onclick = async () => {
+    document.getElementById('btn-subscribe').onclick = async () => {
       try {
         await OneSignal.User.PushSubscription.optIn();
         await OneSignal.User.addTag('players', 'true');
@@ -94,7 +90,7 @@
       }
     };
 
-    diagBtn.onclick = async () => {
+    document.getElementById('btn-diagnostics').onclick = async () => {
       const supported  = OneSignal.Notifications.isPushSupported();
       const permission = OneSignal.Notifications.permission;
       const subId = OneSignal.User.PushSubscription.id;
