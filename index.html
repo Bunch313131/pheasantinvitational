@@ -84,21 +84,25 @@
   OneSignalDeferred.push(async function(OneSignal) {
     await OneSignal.init({
       appId: '5f9e9dc2-5680-402a-876a-ff04423c131a',
-      safari_web_id: '',
+      safari_web_id: '',              // optional
       notifyButton: { enable: false },
-      allowLocalhostAsSecureOrigin: true
+      allowLocalhostAsSecureOrigin: true,
+
+      // IMPORTANT for GitHub Pages in a subfolder:
+      serviceWorkerPath: 'service-worker.js',
+      serviceWorkerUpdaterPath: 'service-worker.js',
+      serviceWorkerParam: { scope: './' }
     });
 
-    // Subscribe & tag
     document.getElementById('btn-subscribe').addEventListener('click', async () => {
       try {
         await OneSignal.User.PushSubscription.optIn();
         await OneSignal.User.addTag('players', 'true');
 
-        // v16: properties, not methods
-        const subId  = OneSignal.User.PushSubscription.id;     // string | null
-        const token  = OneSignal.User.PushSubscription.token;  // string | null
-        const opted  = OneSignal.User.PushSubscription.optedIn; // boolean
+        // v16 properties, not methods
+        const subId = OneSignal.User.PushSubscription.id;
+        const token = OneSignal.User.PushSubscription.token;
+        const opted = OneSignal.User.PushSubscription.optedIn;
 
         alert(subId
           ? `Subscribed! ID: ${subId}\nOptedIn: ${opted}\nToken: ${token || '(no token yet)'}`
@@ -108,36 +112,29 @@
       }
     });
 
-    // Temporary diagnostics button
+    // Diagnostics (keep for now)
     const diagBtn = document.createElement('button');
     diagBtn.className = 'btn alt';
     diagBtn.style.margin = '16px';
     diagBtn.textContent = 'Diagnostics';
     document.querySelector('.wrap').appendChild(diagBtn);
-
     diagBtn.addEventListener('click', async () => {
-      try {
-        const supported  = OneSignal.Notifications.isPushSupported();     // boolean
-        const permission = OneSignal.Notifications.permission;            // 'granted' | 'denied' | 'default'
-        const standalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true;
-
-        const subId = OneSignal.User.PushSubscription.id;
-        const token = OneSignal.User.PushSubscription.token;
-        const opted = OneSignal.User.PushSubscription.optedIn;
-        const tags  = await OneSignal.User.getTags();
-
-        alert(
-          'Supported: ' + supported + '\n' +
-          'Permission: ' + permission + '\n' +
-          'Standalone(A2HS): ' + standalone + '\n' +
-          'OptedIn: ' + opted + '\n' +
-          'Sub ID: ' + subId + '\n' +
-          'Token: ' + token + '\n' +
-          'Tags: ' + JSON.stringify(tags)
-        );
-      } catch (e) {
-        alert('Diag error: ' + (e && e.message ? e.message : e));
-      }
+      const supported  = OneSignal.Notifications.isPushSupported();
+      const permission = OneSignal.Notifications.permission;
+      const standalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true;
+      const subId = OneSignal.User.PushSubscription.id;
+      const token = OneSignal.User.PushSubscription.token;
+      const opted = OneSignal.User.PushSubscription.optedIn;
+      const tags  = await OneSignal.User.getTags();
+      alert(
+        'Supported: ' + supported + '\n' +
+        'Permission: ' + permission + '\n' +
+        'Standalone(A2HS): ' + standalone + '\n' +
+        'OptedIn: ' + opted + '\n' +
+        'Sub ID: ' + subId + '\n' +
+        'Token: ' + token + '\n' +
+        'Tags: ' + JSON.stringify(tags)
+      );
     });
   });
 </script>
