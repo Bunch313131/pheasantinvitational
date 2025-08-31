@@ -77,7 +77,7 @@
 
     window.OneSignalDeferred = window.OneSignalDeferred || [];
     OneSignalDeferred.push(async function(OneSignal) {
-      await OneSignal.init({ appId: 'YOUR-ONESIGNAL-APP-ID', safari_web_id: '', notifyButton: { enable: false }, allowLocalhostAsSecureOrigin: true });
+      await OneSignal.init({ appId: "5f9e9dc2-5680-402a-876a-ff04423c131a", safari_web_id: '', notifyButton: { enable: false }, allowLocalhostAsSecureOrigin: true });
       document.getElementById('btn-subscribe').addEventListener('click', async () => {
         try {
           const sub = await OneSignal.User.PushSubscription.optIn();
