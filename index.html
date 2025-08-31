@@ -4,7 +4,8 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="theme-color" content="#ffffff" />
- <link rel="manifest" href="manifest.json?v=2" />
+  <!-- cache-busted manifest; keep start_url/scope as "./" inside manifest.json -->
+  <link rel="manifest" href="manifest.json?v=2" />
   <link rel="icon" href="assets/icon-32.png" sizes="32x32" />
   <title>The Pheasant Invitational</title>
   <style>
@@ -12,7 +13,8 @@
       --bg: #ffffff; --fg: #111827; --muted: #64748b; --border: #e5e7eb; --card: #ffffff;
       --button: #111827; --buttonText: #ffffff;
     }
-    * { box-sizing: border-box; } html, body { margin:0; padding:0; background:var(--bg); color:var(--fg);
+    * { box-sizing: border-box; }
+    html, body { margin:0; padding:0; background:var(--bg); color:var(--fg);
       font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial; }
     .wrap { max-width: 860px; margin: 0 auto; padding: 24px; }
     header { display:flex; align-items:center; gap: 14px; padding-bottom: 12px; border-bottom: 1px solid var(--border); }
@@ -44,7 +46,10 @@
         <button id="btn-subscribe" class="btn">Enable Notifications</button>
         <button id="btn-install" class="btn alt">Add to Home Screen</button>
       </div>
-      <div class="ios-tip" id="iosTip"><strong>iPhone:</strong> Tap the <em>Share</em> icon → <strong>Add to Home Screen</strong>. Open from the new icon, then tap <em>Enable Notifications</em>.</div>
+      <div class="ios-tip" id="iosTip">
+        <strong>iPhone:</strong> Tap the <em>Share</em> icon → <strong>Add to Home Screen</strong>. 
+        Open from the new icon, then tap <em>Enable Notifications</em>.
+      </div>
     </div>
 
     <div class="card">
@@ -66,69 +71,74 @@
       </div>
     </div>
 
-    <div class="muted" style="margin-top:16px">App URL:
-  <a href="https://bunch313131.github.io/pheasantinvitational/">https://bunch313131.github.io/pheasantinvitational/</a>
-</div>
-
+    <div class="muted" style="margin-top:16px">
+      App URL:
+      <a href="https://bunch313131.github.io/pheasantinvitational/">
+        https://bunch313131.github.io/pheasantinvitational/
+      </a>
+    </div>
+  </div>
 
   <script>
+    // iOS hint + SW registration
     const isIOS = /iphone|ipad|ipod/i.test(navigator.userAgent);
     const isStandalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true;
     if (isIOS && !isStandalone) { document.getElementById('iosTip').style.display = 'block'; }
-    if ('serviceWorker' in navigator) { window.addEventListener('load', () => navigator.serviceWorker.register('service-worker.js')); }
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => navigator.serviceWorker.register('service-worker.js'));
+    }
 
-    <script>
-  window.OneSignalDeferred = window.OneSignalDeferred || [];
-  OneSignalDeferred.push(async function(OneSignal) {
-    await OneSignal.init({
-      appId: '5f9e9dc2-5680-402a-876a-ff04423c131a',  // your App ID (looks good)
-      safari_web_id: '',                               // OK to leave blank
-      notifyButton: { enable: false },
-      allowLocalhostAsSecureOrigin: true
+    // OneSignal init + subscribe + diagnostics
+    window.OneSignalDeferred = window.OneSignalDeferred || [];
+    OneSignalDeferred.push(async function(OneSignal) {
+      await OneSignal.init({
+        appId: '5f9e9dc2-5680-402a-876a-ff04423c131a',  // your OneSignal App ID
+        safari_web_id: '',                               // optional
+        notifyButton: { enable: false },
+        allowLocalhostAsSecureOrigin: true
+      });
+
+      // Subscribe & tag
+      document.getElementById('btn-subscribe').addEventListener('click', async () => {
+        try {
+          await OneSignal.User.PushSubscription.optIn();
+          await OneSignal.User.addTag('players', 'true');
+          const subId = await OneSignal.User.PushSubscription.getSubscriptionId();
+          alert(subId
+            ? ('Subscribed! ID: ' + subId)
+            : 'Subscribed, but no ID yet — check OneSignal Web Platform "Site URL" is https://bunch313131.github.io');
+        } catch(e) {
+          alert('Subscription failed. On iPhone, "Add to Home Screen" first.');
+        }
+      });
+
+      // Temporary diagnostics button (you can remove later)
+      const diagBtn = document.createElement('button');
+      diagBtn.className = 'btn alt';
+      diagBtn.style.margin = '16px';
+      diagBtn.textContent = 'Diagnostics';
+      document.querySelector('.wrap').appendChild(diagBtn);
+
+      diagBtn.addEventListener('click', async () => {
+        try {
+          const perm = await OneSignal.Notifications.permission;  // 'granted' | 'denied' | 'default'
+          const subId = await OneSignal.User.PushSubscription.getSubscriptionId();
+          const tags = await OneSignal.User.getTags();
+          alert(
+            'Permission: ' + perm + '\n' +
+            'Subscription ID: ' + subId + '\n' +
+            'Tags: ' + JSON.stringify(tags)
+          );
+        } catch (e) {
+          alert('Diag error: ' + (e && e.message ? e.message : e));
+        }
+      });
     });
-
-    // Subscribe and tag as players
-    document.getElementById('btn-subscribe').addEventListener('click', async () => {
-      try {
-        await OneSignal.User.PushSubscription.optIn();
-        await OneSignal.User.addTag('players', 'true');
-        const subId = await OneSignal.User.PushSubscription.getSubscriptionId();
-        alert(subId
-          ? ('Subscribed! ID: ' + subId)
-          : 'Subscribed, but no ID yet — check OneSignal Web Platform "Site URL" is https://bunch313131.github.io');
-      } catch (e) {
-        alert('Subscription failed. On iPhone, "Add to Home Screen" first.');
-      }
-    });
-
-    // Temporary diagnostics button
-    const diagBtn = document.createElement('button');
-    diagBtn.className = 'btn alt';
-    diagBtn.style.margin = '16px';
-    diagBtn.textContent = 'Diagnostics';
-    document.querySelector('.wrap').appendChild(diagBtn);
-
-    diagBtn.addEventListener('click', async () => {
-      try {
-        const perm = await OneSignal.Notifications.permission;  // 'granted' | 'denied' | 'default'
-        const subId = await OneSignal.User.PushSubscription.getSubscriptionId();
-        const tags = await OneSignal.User.getTags();
-        alert(
-          'Permission: ' + perm + '\n' +
-          'Subscription ID: ' + subId + '\n' +
-          'Tags: ' + JSON.stringify(tags)
-        );
-      } catch (e) {
-        alert('Diag error: ' + (e && e.message ? e.message : e));
-      }
-    });
-  });
-</script>
-
   </script>
   <script src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js" async></script>
 
   <script>
+    // Install prompt (Android/Desktop)
     let deferredPrompt = null;
     window.addEventListener('beforeinstallprompt', (e) => { e.preventDefault(); deferredPrompt = e; });
     document.getElementById('btn-install').addEventListener('click', async () => {
