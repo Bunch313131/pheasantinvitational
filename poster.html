@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>The Pheasant Invitational · QR Poster</title>
+  <style>
+    @media print { @page { size: A4; margin: 12mm; } body { margin:0; } }
+    body { font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial; color: #111827; }
+    .page { max-width: 820px; margin: 24px auto; border: 2px solid #0b1220; border-radius: 12px; padding: 24px; }
+    h1 { margin: 0 0 4px 0; font-size: 36px; }
+    .muted { color:#475569; }
+    .grid { display:grid; grid-template-columns: 1fr 1fr; gap: 24px; align-items:center; }
+    .qr { width: 360px; height: 360px; background:#f1f5f9; display:grid; place-items:center; border:1px solid #cbd5e1; }
+    .steps li { margin: 8px 0; }
+    .logo { width: 180px; height: 180px; display:grid; place-items:center; border:1px solid #e5e7eb; border-radius: 12px; overflow:hidden; }
+    .logo img { width:100%; height:100%; object-fit:contain; }
+    .row { display:flex; gap:12px; align-items:center; margin-bottom:8px; }
+    .badge { display:inline-block; background:#111827; color:white; padding:6px 10px; border-radius:999px; font-weight:700; }
+    .box { background:#f8fafc; border:1px dashed #cbd5e1; border-radius:12px; padding:12px; }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <div class="row">
+      <div class="logo"><img src="assets/icon-192.png" alt="logo" /></div>
+      <div>
+        <div class="badge">LIVE ALERTS</div>
+        <h1>The Pheasant Invitational</h1>
+        <div class="muted">https://your-org.github.io/pheasant-invitational</div>
+      </div>
+    </div>
+    <div class="grid" style="margin-top: 8px">
+      <div class="qr" id="qr"></div>
+      <div>
+        <ol class="steps">
+          <li>Scan the QR to open the tournament app.</li>
+          <li><strong>iPhone:</strong> Share → <strong>Add to Home Screen</strong>.</li>
+          <li>Open the new app icon and tap <strong>Enable Notifications</strong>.</li>
+        </ol>
+        <div class="box"><strong>Need help?</strong> Ask a volunteer at Registration.</div>
+      </div>
+    </div>
+  </div>
+<script>
+/* Minimal QRCode generator - MIT License (trimmed) */
+!function(){function t(t){this.mode=4,this.data=t,this.parsedData=[];for(var e=0,n=this.data.length;e<n;e++){var r=[],a=this.data.charCodeAt(e);a>65536?(r[0]=240|(1835008&a)>>>18,r[1]=128|(258048&a)>>>12,r[2]=128|(4032&a)>>>6,r[3]=128|63&a):a>2048?(r[0]=224|(61440&a)>>>12,r[1]=128|(4032&a)>>>6,r[2]=128|63&a):a>128?(r[0]=192|(1984&a)>>>6,r[1]=128|63&a):r[0]=a,this.parsedData.push(r)}this.parsedData=Array.prototype.concat.apply([],this.parsedData)}function e(t){this.typeNumber=t,this.modules=null,this.moduleCount=0,this.dataList=[]}var n={PAD0:236,PAD1:17};t.prototype={getLength:function(){return this.parsedData.length},write:function(t){for(var e=0,n=this.parsedData.length;e<n;e++)t.put(this.parsedData[e],8)}};var r=function(){var t=function(){this.buffer=[],this.length=0};return t.prototype={getLengthInBits:function(){return this.length},put:function(t,e){for(var n=0;n<e;n++)this.putBit((t>>>e-n-1&1)==1)},putBit:function(t){var e=Math.floor(this.length/8);this.buffer.length<=e&&this.buffer.push(0),t&&(this.buffer[e]|=128>>>this.length%8),this.length++}},t}();e.prototype={addData:function(e){var n=new t(e);this.dataList.push(n)},isDark:function(t,e){return this.modules[t][e]},getModuleCount:function(){return this.moduleCount},make:function(){this.typeNumber=1,this.moduleCount=21,this.modules=new Array(this.moduleCount);for(var t=0;t<this.moduleCount;t++){this.modules[t]=new Array(this.moduleCount);for(var e=0;e<this.moduleCount;e++)this.modules[t][e]=null}this._setupPos(0,0),this._setupPos(this.moduleCount-7,0),this._setupPos(0,this.moduleCount-7),this._mapData(this._createData())},_setupPos:function(t,e){for(var n=-1;n<=7;n++)if(!(t+n<=-1||this.moduleCount<=t+n))for(var r=-1;r<=7;r++)e+r<=-1||this.moduleCount<=e+r||(n>=0&&n<=6&&(0==r||6==r)||r>=0&&r<=6&&(0==n||6==n)||n>=2&&n<=4&&r>=2&&r<=4?this.modules[t+n][e+r]=!0:this.modules[t+n][e+r]=!1)},_mapData:function(t){for(var e=0,n=this.moduleCount-1,r=7,a=0,i=this.moduleCount-1;i>0;i-=2){for(6==i&&i--;e<this.moduleCount;e++){for(var o=0;o<2;o++)null==this.modules[n][i-o]&&(a<t.length?val=(t[a]>>>r&1)==1:val=!1,this.modules[n][i-o]=val,0==--r&&(a++,r=7));n+=1;if(n<0||this.moduleCount<=n){n=this.moduleCount-1;break}}}},_createData:function(){var t=new r();t.put(4,4);var e=this.dataList[0].getLength();t.put(e,8);this.dataList[0].write(t);for(var a=[].slice.call(t.buffer,0),i=this._total()-a.length;i>0;)a.push(0,i%2?n.PAD0:n.PAD1),i--;return a},_total:function(){return 16}};window.QRCode=e;}();
+
+
+(function() {
+  var url = "https://your-org.github.io/pheasant-invitational";
+  var qr = new QRCode(1);
+  qr.addData(url);
+  qr.make();
+  var size = 360;
+  var count = qr.getModuleCount();
+  var scale = Math.floor(size / count);
+  var canvas = document.createElement('canvas');
+  canvas.width = canvas.height = count * scale;
+  var ctx = canvas.getContext('2d');
+  ctx.fillStyle = '#000';
+  for (var r=0; r<count; r++) {
+    for (var c=0; c<count; c++) {
+      if (qr.isDark(r,c)) ctx.fillRect(c*scale, r*scale, scale, scale);
+    }
+  }
+  document.getElementById('qr').innerHTML = '';
+  document.getElementById('qr').appendChild(canvas);
+})();
+</script>
+</body>
+</html>
